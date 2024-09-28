@@ -1,89 +1,43 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-        }
-        
-        #chat-container {
-            width: 50%;
-            margin: 40px auto;
-            padding: 20px;
-            border: 1px solid #ccc;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-        }
-        
-        #chat-input {
-            width: 80%;
-            padding: 10px;
-            font-size: 16px;
-            margin-bottom: 10px;
-        }
-        
-        #send-button {
-            background-color: #4CAF50;
-            color: #fff;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        
-        #chat-messages {
-            padding: 10px;
-        }
-    </style>
-</head>
-<body>
-    <div id="chat-container">
-        <h1>Chat</h1>
-        <input type="text" id="chat-input" placeholder="Digite uma mensagem">
-        <button id="send-button">Enviar</button>
-        <div id="chat-messages"></div>
-    </div>
-
-    <script>
-        const chatInput = document.getElementById('chat-input');
-        const sendButton = document.getElementById('send-button');
-        const chatMessages = document.getElementById('chat-messages');
-
-        sendButton.addEventListener('click', () => {
-            fetch('/api/add-message', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: chatInput.value })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    console.log('Mensagem enviada com sucesso!');
-                    chatMessages.innerHTML += `<p>${chatInput.value}</p>`;
-                    chatInput.value = '';
-                } else {
-                    console.error(`Erro ao enviar mensagem: ${data.error}`);
-                }
-            })
-            .catch(error => console.error(error));
+<form id="chat-form">
+    <input type="text" id="message" placeholder="Digite uma mensagem">
+    <button type="submit">Enviar</button>
+  </form>
+  
+  <script>
+    const form = document.getElementById('chat-form');
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const messageInput = document.getElementById('message').value;
+      fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: messageInput })
+      })
+      .then(response => response.json())
+      .then(data => console.log(data))
+      .catch(error => console.error(error));
+  
+      fetch('/api/options')
+      .then(response => response.json())
+      .then(options => {
+        const optionsList = document.getElementById('options-list');
+        optionsList.innerHTML = '';
+        options.forEach(option => {
+          const optionHtml = document.createElement('li');
+          optionHtml.textContent = option;
+          optionsList.appendChild(optionHtml);
         });
-
-        const getMessagesButton = document.createElement('button');
-        getMessagesButton.textContent = 'Obter Mensagens';
-        getMessagesButton.addEventListener('click', () => {
-            fetch('/api/get-messages')
-            .then(response => response.json())
-            .then(data => {
-                chatMessages.innerHTML += '<p>' + data.messages.join('<br>') + '</p>';
-            })
-            .catch(error => console.error(error));
-        });
-
-        document.body.appendChild(getMessagesButton);
-    </script>
-</body>
-</html>
+      })
+      .catch(error => console.error(error));
+    });
+  
+    fetch('/api/final-response')
+    .then(response => response.json())
+    .then(data => console.log(data))
+    .catch(error => console.error(error));
+  
+    const optionsList = document.getElementById('options-list');
+  </script>
+  
+  <ul id="options-list"></ul>
+  

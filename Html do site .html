@@ -21,7 +21,7 @@
     <script>
         document.getElementById("send-btn").addEventListener("click", function() {
             const userInput = document.getElementById("user-input").value;
-            fetch('/chat', {
+            fetch('http://127.0.0.1:1234/chat', { // URL do seu servidor local
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ message: userInput })
